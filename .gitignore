@@ -1,0 +1,17 @@
+# IDEs
+.idea
+*.iml
+.classpath
+.factorypath
+.project
+.settings
+.vscode
+
+# Build
+.setup
+target
+build
+.gradle
+
+# Generated
+gh-pages
