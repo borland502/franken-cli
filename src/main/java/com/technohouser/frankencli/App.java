@@ -1,12 +1,14 @@
 package com.technohouser.frankencli;
 
 import com.technohouser.frankencli.command.HelloWorld;
-import com.technohouser.frankencli.command.Reflect;
 import lombok.val;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import picocli.CommandLine;
+import picocli.CommandLine.IFactory;
 
 /**
  * Command line entrypoint
@@ -14,21 +16,18 @@ import picocli.CommandLine;
  * @author Jeremy Hettenhouser
  */
 @SpringBootApplication
-@SpringBootConfiguration
-@CommandLine.Command(
-        name = "app",
-        description = "CLI Application",
-        aliases = {"app"},
-        header = "APP",
-        footer = "(c) Jeremy Hettenhouser",
-        mixinStandardHelpOptions = true,
-        subcommands = {
-                CommandLine.HelpCommand.class,
-                HelloWorld.class,
-                Reflect.class
-        }
-)
-public class App {
+public class App implements CommandLineRunner, ExitCodeGenerator
+{
+
+    private final CommandLine.IFactory factory;
+    private final HelloWorld helloWorld;
+    private int exitCode;
+
+    public App(IFactory factory, HelloWorld helloWorld)
+    {
+        this.factory = factory;
+        this.helloWorld = helloWorld;
+    }
 
     /**
      * Bootstrap the command
@@ -36,15 +35,19 @@ public class App {
      * @param args the command line args
      */
     public static void main(final String[] args) {
-        val defaultColorScheme = CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.AUTO);
-        val colorScheme = new CommandLine.Help.ColorScheme.Builder(defaultColorScheme)
-                .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_cyan)
-                .build();
-        val status = new CommandLine(new App())
-                .setColorScheme(colorScheme)
-                .execute(args);
-
-        Runtime.getRuntime().halt(status);
+        System.exit(SpringApplication.exit(SpringApplication.run(App.class, args)));
     }
 
+    @Override
+    public void run(String... args) throws Exception
+    {
+        // let picocli parse command line args and run the business logic
+        exitCode = new CommandLine(helloWorld, factory).execute(args);
+    }
+
+    @Override
+    public int getExitCode()
+    {
+        return exitCode;
+    }
 }

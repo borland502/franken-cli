@@ -1,15 +1,17 @@
-# Java CLI Template
+# Spring Native Seed Project
 
-![Maven CI](https://github.com/brianwyka/java-cli-template/actions/workflows/maven-ci.yml/badge.svg) 
-![Gradle CI](https://github.com/brianwyka/java-cli-template/actions/workflows/gradle-ci.yml/badge.svg)
+This is a seed repository for building CLI applications with Spring Native.  It leverages
+[Picocli](https://picocli.info/) for bootstrapping the CLI execution, 
+[GraalVM native-image](https://www.graalvm.org/reference-manual/native-image/) and 
+[Spring Native](https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/) for building
+a native image executable
 
-This is a template repository for building CLI applications with Java.  It leverages
-[Picocli](https://picocli.info/) for bootstrapping the CLI execution and 
-[GraalVM native-image](https://www.graalvm.org/reference-manual/native-image/) for building 
-a native image executable.
+**NOTE:** If you don't need Spring Native at all, the forked parent of this project will serve you far better
 
 * **JDK Version**: `17`
-* **GraalVM Version**: `21.3.0` 
+* **Spring Version**: `2.6.3`
+* **Spring Native Version**: `0.11.2`
+* **GraalVM Version**: `22.0.0.2` 
 
 ## Build
 
@@ -20,25 +22,6 @@ For the `native-image` build, see instructions at bottom for tooling pre-requisi
 ```sh
 ./mvnw clean install # Build executable JAR
 ./mvnw clean install -D nativeImage # Build native image
-```
-
-### Gradle
-```sh
-./gradlew clean build # Build executable JAR
-./gradlew clean nativeImage # Build native image
-```
-
-### Docker
-An external build is first required since the `Dockerfile` needs to `ADD` the executable JAR.  
-By default, the JAR used is from maven build.
-
-```sh
-docker build -t java-cli-template .
-```
-
-To use the gradle build output:
-```sh
-docker build -t java-cli-template --build-arg "JAR=build/libs/java-cli-template-*.jar" .
 ```
 
 ## Run
@@ -61,30 +44,12 @@ echo "Brian" | java -jar target/java-cli-template-*.jar hello-world -
 echo "Brian" | ./target/app hello-world -
 ```
 
-### Gradle
-
-#### Executable JAR
-```sh
-java -jar build/libs/java-cli-template-*.jar --help
-java -jar build/libs/java-cli-template-*.jar hello-world
-java -jar build/libs/java-cli-template-*.jar hello-world Brian
-echo "Brian" | java -jar build/libs/java-cli-template-*.jar hello-world -
-```
-
 #### Native Image
 ```sh
 ./build/graal/app --help
 ./build/graal/app hello-world
 ./build/graal/app hello-world Brian
 echo "Brian" | ./build/graal/app hello-world -
-```
-
-### Docker
-```sh
-docker run java-cli-template --help
-docker run java-cli-template hello-world
-docker run java-cli-template hello-world Brian
-echo "Brian" | docker run -i java-cli-template hello-world -
 ```
 
 ## Reflection in Native Image
@@ -118,8 +83,6 @@ The maven build requires that GraalVM and `native-image` tooling already be avai
 ```sh
 ./install-graalvm.sh
 ```
-
-If you are using Gradle or Docker, you do not need to perform this installation.
 
 #### GraalVM and Native Image Installation Instructions
 - Getting Started

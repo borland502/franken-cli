@@ -9,30 +9,42 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.technohouser</groupId>
-	<artifactId>frakencli</artifactId>
+	<artifactId>frankencli</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>frankencli</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Seed Project for Sprint Native CLIs</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>17</java.version>
 		<lombok.version>1.18.22</lombok.version>
-		<graalvm.version>21.3.1</graalvm.version>
+		<graalvm.version>22.0.0.2</graalvm.version>
 		<picocli.version>4.6.1</picocli.version>
+		<guava.version>31.0.1-jre</guava.version>
+		<bitbucket-rest.version>3.0.1</bitbucket-rest.version>
+		<jenkins-rest.version>1.0.0</jenkins-rest.version>
+		<jgit.version>6.0.0.202111291000-r</jgit.version>
+		<maven-exec-plugin.version>3.0.0</maven-exec-plugin.version>
 		<repackage.classifier/>
 		<spring-native.version>0.11.2</spring-native.version>
 		<main.class>com.technohouser.frankencli.App</main.class>
-		<cli.name>frakencli</cli.name>
+		<cli.name>frankencli</cli.name>
 		<start-class>com.technohouser.frankencli.App</start-class>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 
+			<!-- Supplement the Spring BOM and override the Spring Native POM with the premier Java CLI library -->
+			<dependency>
+				<groupId>info.picocli</groupId>
+				<artifactId>picocli-spring-boot-starter</artifactId>
+				<version>${picocli.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>31.0.1-jre</version>
+				<version>${guava.version}</version>
 			</dependency>
 
 			<dependency>
@@ -44,58 +56,66 @@
 			<dependency>
 				<groupId>com.cdancy</groupId>
 				<artifactId>bitbucket-rest</artifactId>
-				<version>3.0.1</version>
+				<version>${bitbucket-rest.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>io.github.cdancy</groupId>
 				<artifactId>jenkins-rest</artifactId>
-				<version>1.0.0</version>
+				<version>${jenkins-rest.version}</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
 			<dependency>
 				<groupId>org.eclipse.jgit</groupId>
 				<artifactId>org.eclipse.jgit</artifactId>
-				<version>6.0.0.202111291000-r</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.picocli</groupId>
-				<artifactId>picocli</artifactId>
-				<version>4.6.2</version>
+				<version>${jgit.version}</version>
 			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
+
 		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli-spring-boot-starter</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>guava</artifactId>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>org.liquibase</groupId>
+			<artifactId>liquibase-core</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.experimental</groupId>
 			<artifactId>spring-native</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>info.picocli</groupId>
-			<artifactId>picocli</artifactId>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+<!--		</dependency>-->
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -145,7 +165,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M5</version>
+					<version>${maven-surefire-plugin.version}</version>
 					<configuration>
 						<includes>
 							<include>**/*Spec.class</include>
@@ -156,6 +176,16 @@
 					<groupId>org.graalvm.buildtools</groupId>
 					<artifactId>native-maven-plugin</artifactId>
 					<version>${native-buildtools.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.experimental</groupId>
+					<artifactId>spring-aot-maven-plugin</artifactId>
+					<version>${spring-native.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>${maven-exec-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -182,7 +212,6 @@
 			<plugin>
 				<groupId>org.springframework.experimental</groupId>
 				<artifactId>spring-aot-maven-plugin</artifactId>
-				<version>${spring-native.version}</version>
 				<executions>
 					<execution>
 						<id>test-generate</id>
@@ -197,62 +226,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>generate-manpage-asciidocs</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<includeProjectDependencies>true</includeProjectDependencies>
-							<includePluginDependencies>true</includePluginDependencies>
-							<mainClass>picocli.codegen.docgen.manpage.ManPageGenerator</mainClass>
-							<arguments>
-								<argument>--outdir=${project.build.directory}/generated-docs</argument>
-								<argument>${main.class}</argument>
-								<argument>com.technohouser.frankencli.command.HelloWorld</argument>
-								<argument>com.technohouser.frankencli.command.Reflect</argument>
-							</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>generate-bash-completion-script</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>java</goal>
-						</goals>
-						<configuration>
-							<includeProjectDependencies>true</includeProjectDependencies>
-							<includePluginDependencies>true</includePluginDependencies>
-							<mainClass>picocli.AutoComplete</mainClass>
-							<systemProperties>
-								<systemProperty>
-									<key>picocli.autocomplete.systemExitOnError</key>
-								</systemProperty>
-							</systemProperties>
-							<arguments>
-								<argument>--force</argument>
-								<argument>--completionScript</argument>
-								<argument>${project.build.directory}/${cli.name}-bash-completion.sh</argument>
-								<argument>${main.class}</argument>
-							</arguments>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>info.picocli</groupId>
-						<artifactId>picocli-codegen</artifactId>
-						<version>${picocli.version}</version>
-						<type>jar</type>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

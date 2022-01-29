@@ -1,9 +1,11 @@
 package com.technohouser.frankencli.command;
 
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 /**
@@ -11,6 +13,7 @@ import picocli.CommandLine;
  *
  * @author brianwyka
  */
+@Component
 @Slf4j(topic = "OUT")
 @CommandLine.Command(
         name = "hello-world",
@@ -31,14 +34,10 @@ public class HelloWorld implements Callable<Integer> {
     private String name;
 
     /**
-     * Bootstrap the command
-     *
-     * @param args the command line args
+     * Prevent Picocli from throwing an error if someone doesn't add an argument
      */
-    public static void main(final String... args) {
-        val status = new CommandLine(new HelloWorld()).setTrimQuotes(true).execute(args);
-        Runtime.getRuntime().halt(status);
-    }
+    @CommandLine.Unmatched
+    List<String> unmatched;
 
     /**
      * Entrypoint to the command
@@ -47,13 +46,7 @@ public class HelloWorld implements Callable<Integer> {
      */
     @Override
     public Integer call() {
-        if ("-".equals(name)) {
-            try (val scanner = new Scanner(System.in)) {
-                while (scanner.hasNext()) {
-                    log.info("Hello {}!", scanner.nextLine());
-                }
-            }
-        } else if (name != null && !name.isBlank()) {
+        if (name != null && !name.isBlank()) {
             log.info("Hello {}!", name);
         } else {
             log.info("Hello World!");
