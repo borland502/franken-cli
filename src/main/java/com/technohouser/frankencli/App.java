@@ -1,21 +1,26 @@
-package io.github.brianwyka;
+package com.technohouser.frankencli;
 
-import io.github.brianwyka.command.HelloWorld;
-import io.github.brianwyka.command.Reflect;
+import com.technohouser.frankencli.command.HelloWorld;
+import com.technohouser.frankencli.command.Reflect;
 import lombok.val;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import picocli.CommandLine;
 
 /**
  * Command line entrypoint
  *
- * @author brianwyka
+ * @author Jeremy Hettenhouser
  */
+@SpringBootApplication
+@SpringBootConfiguration
 @CommandLine.Command(
         name = "app",
         description = "CLI Application",
         aliases = {"app"},
         header = "APP",
-        footer = "(c) Brian Wyka",
+        footer = "(c) Jeremy Hettenhouser",
         mixinStandardHelpOptions = true,
         subcommands = {
                 CommandLine.HelpCommand.class,
@@ -38,6 +43,7 @@ public class App {
         val status = new CommandLine(new App())
                 .setColorScheme(colorScheme)
                 .execute(args);
+
         Runtime.getRuntime().halt(status);
     }
 

@@ -1,4 +1,4 @@
-package io.github.brianwyka.command;
+package com.technohouser.frankencli.command;
 
 import java.util.concurrent.Callable;
 import lombok.extern.slf4j.Slf4j;
