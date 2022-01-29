@@ -1,12 +1,10 @@
 package com.technohouser.frankencli;
 
 import com.technohouser.frankencli.command.HelloWorld;
-import lombok.val;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import picocli.CommandLine;
 import picocli.CommandLine.IFactory;
 

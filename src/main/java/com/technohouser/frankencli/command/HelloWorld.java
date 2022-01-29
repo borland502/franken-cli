@@ -1,10 +1,9 @@
 package com.technohouser.frankencli.command;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.Callable;
+
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
@@ -20,6 +19,7 @@ import picocli.CommandLine;
         description = "Print out Hello World",
         mixinStandardHelpOptions = true
 )
+@SuppressWarnings("java:S106")
 public class HelloWorld implements Callable<Integer> {
 
     /**
@@ -47,9 +47,9 @@ public class HelloWorld implements Callable<Integer> {
     @Override
     public Integer call() {
         if (name != null && !name.isBlank()) {
-            log.info("Hello {}!", name);
+            System.out.println("Hello " + name + "!");
         } else {
-            log.info("Hello World!");
+            System.out.println("Hello World!");
         }
         return CommandLine.ExitCode.OK;
     }
