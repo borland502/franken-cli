@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.3</version>
+		<version>3.0.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.technohouser</groupId>
@@ -15,20 +15,18 @@
 	<description>Seed Project for Sprint Native CLIs</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>17</java.version>
-		<lombok.version>1.18.22</lombok.version>
-		<graalvm.version>22.0.0.2</graalvm.version>
-		<picocli.version>4.6.1</picocli.version>
+		<java.version>19</java.version>
+		<graalvm.version>22.3.r19</graalvm.version>
+		<picocli.version>4.7.0</picocli.version>
 		<guava.version>31.0.1-jre</guava.version>
 		<bitbucket-rest.version>3.0.1</bitbucket-rest.version>
 		<jenkins-rest.version>1.0.0</jenkins-rest.version>
 		<jgit.version>6.0.0.202111291000-r</jgit.version>
-		<maven-exec-plugin.version>3.0.0</maven-exec-plugin.version>
 		<repackage.classifier/>
-		<spring-native.version>0.11.2</spring-native.version>
 		<main.class>com.technohouser.frankencli.App</main.class>
 		<cli.name>frankencli</cli.name>
 		<start-class>com.technohouser.frankencli.App</start-class>
+		<native-build-tools-plugin.version>0.9.17</native-build-tools-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -39,85 +37,47 @@
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli-spring-boot-starter</artifactId>
 				<version>${picocli.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-native</artifactId>
-				<version>${spring-native.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.cdancy</groupId>
-				<artifactId>bitbucket-rest</artifactId>
-				<version>${bitbucket-rest.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.github.cdancy</groupId>
-				<artifactId>jenkins-rest</artifactId>
-				<version>${jenkins-rest.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit</artifactId>
-				<version>${jgit.version}</version>
+				<!-- For now, Logging in Spring Native is messy and logback is hard to get to work with a lot of stuff so kill the leak here -->
+				<exclusions>
+					<exclusion>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli-spring-boot-starter</artifactId>
+			<version>4.7.0</version>
 		</dependency>
 
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
 		</dependency>
-
 		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
 		</dependency>
-
 		<dependency>
-			<groupId>org.springframework.experimental</groupId>
-			<artifactId>spring-native</artifactId>
+			<groupId>info.picocli</groupId>
+			<artifactId>picocli-codegen</artifactId>
+			<version>4.7.0</version>
+			<optional>true</optional>
 		</dependency>
-
-		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-data-jpa</artifactId>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -129,168 +89,65 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${maven-compiler-plugin.version}</version>
-					<configuration>
-						<release>${java.version}</release>
-						<compilerId>javac</compilerId>
-						<compilerArgs>
-							<arg>-Xlint:all</arg>
-							<arg>-Xlint:-processing</arg>
-							<arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
-						</compilerArgs>
-						<failOnError>true</failOnError>
-						<failOnWarning>false</failOnWarning>
-						<showDeprecation>true</showDeprecation>
-						<showWarnings>true</showWarnings>
-						<useIncrementalCompilation>true</useIncrementalCompilation>
-						<annotationProcessorPaths>
-							<path>
-								<groupId>org.projectlombok</groupId>
-								<artifactId>lombok</artifactId>
-								<version>${lombok.version}</version>
-							</path>
-							<path>
-								<groupId>info.picocli</groupId>
-								<artifactId>picocli-codegen</artifactId>
-								<version>${picocli.version}</version>
-							</path>
-							<path>
-								<groupId>info.picocli</groupId>
-								<artifactId>picocli</artifactId>
-								<version>${picocli.version}</version>
-							</path>
-						</annotationProcessorPaths>
-					</configuration>
-				</plugin>
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>${maven-surefire-plugin.version}</version>
-					<configuration>
-						<includes>
-							<include>**/*Spec.class</include>
-						</includes>
-					</configuration>
-				</plugin>
-				<plugin>
 					<groupId>org.graalvm.buildtools</groupId>
 					<artifactId>native-maven-plugin</artifactId>
-					<version>${native-buildtools.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.springframework.experimental</groupId>
-					<artifactId>spring-aot-maven-plugin</artifactId>
-					<version>${spring-native.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>${maven-exec-plugin.version}</version>
+					<configuration>
+						<classesDirectory>${project.build.outputDirectory}</classesDirectory>
+						<!-- Mockito is not supported -->
+						<skipNativeTests>true</skipNativeTests>
+						<metadataRepository>
+							<enabled>true</enabled>
+						</metadataRepository>
+						<requiredVersion>22.3</requiredVersion>
+					</configuration>
+					<executions>
+						<execution>
+							<id>add-reachability-metadata</id>
+							<goals>
+								<goal>add-reachability-metadata</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-					<classifier>${repackage.classifier}</classifier>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-						</env>
-					</image>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.experimental</groupId>
-				<artifactId>spring-aot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>test-generate</id>
-						<goals>
-							<goal>test-generate</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>spring-releases</id>
-			<name>Spring Releases</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-releases</id>
-			<name>Spring Releases</name>
-			<url>https://repo.spring.io/release</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<profiles>
+		<!-- The native profile is already defined by the parent POM. -->
+		<!-- To use this plugin, we need GraalVM (located under $GRAALVM_HOME) and -->
+		<!-- native-builder (located in the $PATH) -->
 		<profile>
 			<id>native</id>
-			<properties>
-				<repackage.classifier>exec</repackage.classifier>
-				<native-buildtools.version>0.9.9</native-buildtools.version>
-			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.junit.platform</groupId>
-					<artifactId>junit-platform-launcher</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.graalvm.buildtools</groupId>
 						<artifactId>native-maven-plugin</artifactId>
-						<version>${native-buildtools.version}</version>
-						<extensions>true</extensions>
 						<executions>
 							<execution>
-								<id>test-native</id>
-								<phase>test</phase>
-								<goals>
-									<goal>test</goal>
-								</goals>
-							</execution>
-							<execution>
 								<id>build-native</id>
-								<phase>package</phase>
 								<goals>
-									<goal>build</goal>
+									<goal>compile-no-fork</goal>
 								</goals>
+								<phase>package</phase>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</exclude>
+							</excludes>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
-
 </project>
