@@ -1,9 +1,7 @@
 package com.technohouser.frankencli.command;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
@@ -13,31 +11,12 @@ import picocli.CommandLine;
  * @author brianwyka
  */
 @Component
-@Slf4j(topic = "OUT")
 @CommandLine.Command(
         name = "hello-world",
-        description = "Print out Hello World",
-        mixinStandardHelpOptions = true
+        description = "Print out Hello World"
 )
 @SuppressWarnings("java:S106")
 public class HelloWorld implements Callable<Integer> {
-
-    /**
-     * The person's name
-     */
-    @CommandLine.Parameters(
-            index = "0",
-            arity = "0..1",
-            description = "The name of the person to say hello to, specify '-' to use stdin",
-            showDefaultValue = CommandLine.Help.Visibility.ALWAYS
-    )
-    private String name;
-
-    /**
-     * Prevent Picocli from throwing an error if someone doesn't add an argument
-     */
-    @CommandLine.Unmatched
-    List<String> unmatched;
 
     /**
      * Entrypoint to the command
@@ -46,11 +25,8 @@ public class HelloWorld implements Callable<Integer> {
      */
     @Override
     public Integer call() {
-        if (name != null && !name.isBlank()) {
-            System.out.println("Hello " + name + "!");
-        } else {
-            System.out.println("Hello World!");
-        }
+        System.out.println("Hello world");
+
         return CommandLine.ExitCode.OK;
     }
 
