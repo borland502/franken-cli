@@ -20,7 +20,6 @@ For the `native-image` build, see instructions at bottom for tooling pre-requisi
 
 ```sh
 ./mvnw clean install # Build executable JAR
-./mvnw clean install -Pnative # Build native image 
 ./mvnw -Pnative native:compile # Build native executable
 ```
 
@@ -34,10 +33,14 @@ java -jar target/frankencli-*.jar --help
 java -jar target/frankencli-*.jar hello-world
 ```
 
-#### Native Image
+#### Native Executable
 ```sh
 ./target/frankencli
 ```
+
+#### Spring Shell
+
+- https://docs.spring.io/spring-shell/docs/current/docs/index.html#what-is-spring-shell
 
 #### GraalVM and Native Image Installation Instructions
 - Getting Started
@@ -45,3 +48,7 @@ java -jar target/frankencli-*.jar hello-world
   - https://www.graalvm.org/docs/getting-started/linux/
 - https://www.graalvm.org/reference-manual/native-image/#install-native-image
 - https://www.graalvm.org/reference-manual/ruby/Installingzlib/
+
+#### Examples
+
+- https://github.com/graalvm/graalvm-demos/tree/master/spring-native-image
